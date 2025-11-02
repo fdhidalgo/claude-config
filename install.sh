@@ -48,14 +48,43 @@ link_file() {
 
 echo "Setting up Claude configuration from: $REPO_DIR"
 mkdir -p "$CLAUDE_DIR"
-mkdir -p "$REPO_DIR/commands" "$REPO_DIR/agents" "$REPO_DIR/skills"
+mkdir -p "$REPO_DIR/commands" "$REPO_DIR/agents" "$REPO_DIR/skills" "$REPO_DIR/skills-code" "$REPO_DIR/skills-desktop"
 
 # Remove existing files from commands and agents by replacing dirs with symlinks
 link_dir "$REPO_DIR/commands" "$COMMANDS_LINK"
 link_dir "$REPO_DIR/agents" "$AGENTS_LINK"
 
-# Ensure skills dir exists, then symlink the entire dir for immediate reflection
-link_dir "$REPO_DIR/skills" "$SKILLS_LINK"
+# Handle skills: merge skills/ (both) and skills-code/ (Code-only) for Claude Code
+# skills-desktop/ is NOT symlinked to Code
+backup_and_remove_path "$SKILLS_LINK"
+mkdir -p "$SKILLS_LINK"
+log "Creating merged skills directory for Claude Code"
+
+# Symlink skills from skills/ (both)
+if [ -d "$REPO_DIR/skills" ]; then
+  for skill_dir in "$REPO_DIR/skills"/*; do
+    if [ -d "$skill_dir" ] && [ "$(basename "$skill_dir")" != "." ] && [ "$(basename "$skill_dir")" != ".." ]; then
+      skill_name=$(basename "$skill_dir")
+      if [ "$skill_name" != ".gitkeep" ]; then
+        ln -sf "$skill_dir" "$SKILLS_LINK/$skill_name"
+        log "  Linked skill (both): $skill_name"
+      fi
+    fi
+  done
+fi
+
+# Symlink skills from skills-code/ (Code-only)
+if [ -d "$REPO_DIR/skills-code" ]; then
+  for skill_dir in "$REPO_DIR/skills-code"/*; do
+    if [ -d "$skill_dir" ] && [ "$(basename "$skill_dir")" != "." ] && [ "$(basename "$skill_dir")" != ".." ]; then
+      skill_name=$(basename "$skill_dir")
+      if [ "$skill_name" != ".gitkeep" ]; then
+        ln -sf "$skill_dir" "$SKILLS_LINK/$skill_name"
+        log "  Linked skill (Code-only): $skill_name"
+      fi
+    fi
+  done
+fi
 
 # Link Claude Desktop config on macOS only
 if [[ "$OSTYPE" == "darwin"* ]]; then
@@ -72,7 +101,7 @@ echo
 echo "✅ Installation complete!"
 echo "- Commands: $COMMANDS_LINK -> $REPO_DIR/commands"
 echo "- Agents:   $AGENTS_LINK   -> $REPO_DIR/agents"
-echo "- Skills:   $SKILLS_LINK   -> $REPO_DIR/skills"
+echo "- Skills:   $SKILLS_LINK (merged from skills/ and skills-code/)"
 if [ "$DESKTOP_LINKED" = true ]; then
   echo "- Desktop:  $DESKTOP_CONFIG_LINK -> $REPO_DIR/claude_desktop_config.json"
 fi

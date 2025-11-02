@@ -141,25 +141,36 @@ When creating a new skill from scratch, always run the `init_skill.py` script. T
 
 **IMPORTANT**: Before initializing, determine where the skill should be created:
 
-1. **Shared skills** (`skills/`): For skills that work in both Claude Code and Claude Desktop
-   - Use when the skill doesn't require Desktop-specific MCP tools
+1. **Both Code + Desktop** (`skills/`): Skills that work in both environments
+   - Use when the skill works with tools available in both
    - Automatically available in Claude Code via symlink
+   - Can be packaged for Claude Desktop
    - Path: `~/Documents/personal_scripts/claude-config/skills`
 
-2. **Desktop-only skills** (`skills-desktop/`): For skills that require Desktop-specific MCP tools
-   - Use when the skill needs MCP tools not available in Claude Code
-   - Only accessible in Claude Desktop (after packaging and upload)
+2. **Code-only** (`skills-code/`): Skills that only work in Claude Code
+   - Use when skill requires Code-specific features or MCP tools
+   - Automatically available in Claude Code via symlink
+   - NOT available in Desktop (prevents confusion)
+   - Path: `~/Documents/personal_scripts/claude-config/skills-code`
+
+3. **Desktop-only** (`skills-desktop/`): Skills that only work in Claude Desktop
+   - Use when skill requires Desktop-specific MCP tools
+   - NOT available in Code (prevents confusion)
+   - Must be packaged and uploaded to Desktop
    - Path: `~/Documents/personal_scripts/claude-config/skills-desktop`
 
-**Ask the user**: "Should this skill be shared (Code + Desktop) or Desktop-only?"
+**Ask the user**: "Should this skill be for: (1) Both Code + Desktop, (2) Code-only, or (3) Desktop-only?"
 
 Usage:
 
 ```bash
-# For shared skills (Code + Desktop):
+# For Both (Code + Desktop):
 scripts/init_skill.py <skill-name> --path ~/Documents/personal_scripts/claude-config/skills
 
-# For Desktop-only skills:
+# For Code-only:
+scripts/init_skill.py <skill-name> --path ~/Documents/personal_scripts/claude-config/skills-code
+
+# For Desktop-only:
 scripts/init_skill.py <skill-name> --path ~/Documents/personal_scripts/claude-config/skills-desktop
 ```
 
@@ -170,7 +181,9 @@ The script:
 - Creates example resource directories: `scripts/`, `references/`, and `assets/`
 - Adds example files in each directory that can be customized or deleted
 
-After initialization, customize or remove the generated SKILL.md and example files as needed. The skill will be immediately available in Claude Code (if in `skills/`) or ready for packaging (if in `skills-desktop/`).
+After initialization, customize or remove the generated SKILL.md and example files as needed. The skill will be:
+- Immediately available in Claude Code (if in `skills/` or `skills-code/`)
+- Ready for packaging for Desktop (if in `skills/` or `skills-desktop/`)
 
 ### Step 4: Edit the Skill
 

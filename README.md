@@ -15,12 +15,13 @@ Personal Claude Code configuration sync (commands, agents, and skills) using a G
 claude-config/
 ├── README.md
 ├── .gitignore
-├── install.sh                  # Symlinks ~/.claude/{commands,agents,skills} to this repo
+├── install.sh                  # Symlinks and merges skills for Code
 ├── claude_desktop_config.json  # Claude Desktop config (macOS only)
 ├── commands/                   # User-level slash commands (.md)
 ├── agents/                     # User-level subagents (.md with YAML frontmatter)
-├── skills/                     # Shared skills (Code + Desktop)
-├── skills-desktop/             # Desktop-only skills (not symlinked to Code)
+├── skills/                     # Shared skills (both Code + Desktop)
+├── skills-code/                # Code-only skills (merged into Code, not Desktop)
+├── skills-desktop/             # Desktop-only skills (not in Code)
 ├── project-templates/          # Templates for project-level configs
 │   ├── commands/
 │   └── agents/
@@ -80,41 +81,59 @@ cd claude-config
     - name: string
     - description: string
     - optional: allowed-tools, examples, etc.
-- Skills:
-  - **Shared skills** (`skills/`): Available in both Code and Desktop
-    - Claude Code uses via symlink (automatic)
-    - Claude Desktop requires packaging and upload
-  - **Desktop-only skills** (`skills-desktop/`): Only for Claude Desktop
-    - Not symlinked to Code (useful for skills requiring Desktop-specific MCP tools)
-    - Must be packaged and uploaded manually
-  - Both types must contain `SKILL.md` with YAML frontmatter (`name`, `description`), plus optional `scripts/`, `references/`, `assets/`
+- Skills (three separate directories):
+  - **`skills/` - Both Code + Desktop**: Skills that work in both environments
+    - Automatically available in Claude Code (symlinked)
+    - Can be packaged for Claude Desktop
+    - Use when skill works with tools available in both
+  - **`skills-code/` - Code-only**: Skills that only work in Claude Code
+    - Automatically available in Claude Code (symlinked)
+    - NOT available in Desktop (prevents confusion about missing tools)
+    - Use when skill requires Code-specific features or MCP tools
+  - **`skills-desktop/` - Desktop-only**: Skills that only work in Claude Desktop
+    - NOT available in Code (prevents confusion about missing MCP tools)
+    - Must be packaged and uploaded to Desktop
+    - Use when skill requires Desktop-specific MCP tools
+  - All skills must contain `SKILL.md` with YAML frontmatter (`name`, `description`), plus optional `scripts/`, `references/`, `assets/`
   - **Package for Desktop**:
     ```bash
     ./sync-scripts/package-skill.sh <skill-name>
-    # Automatically searches both skills/ and skills-desktop/
+    # Automatically searches all three directories
     # Upload the created ZIP via Claude Desktop > Settings > Capabilities
     ```
 
 ## Included examples (migrated)
 
-- **Commands**:
-  - `cleanup.md`, `linear-issue.md`, `memory_improve.md`
-- **Agents**:
-  - `marimo-notebook-specialist.md`
-  - `r-code-simplifier.md`
-  - `r-package-advisor.md`
-  - `r-performance-optimizer.md`
-  - `r-test-writer.md`
-  - `targets-pipeline-reviewer.md`
-- **Desktop-only skills**:
+**Commands**:
+- `cleanup.md`, `linear-issue.md`, `memory_improve.md`
+
+**Agents**:
+- `marimo-notebook-specialist.md`
+- `r-code-simplifier.md`
+- `r-package-advisor.md`
+- `r-performance-optimizer.md`
+- `r-test-writer.md`
+- `targets-pipeline-reviewer.md`
+
+**Skills**:
+- **Both (Code + Desktop)** (`skills/`):
+  - `skill-creator` - Create new skills with proper structure
+- **Code-only** (`skills-code/`):
+  - _(empty - add Code-specific skills here)_
+- **Desktop-only** (`skills-desktop/`):
   - `academic-reviewer`, `code-agent-builder`, `mochi-flashcards`, `student-feedback`, `weekly-reflection`
 
-Usage in Claude Code:
+**Usage in Claude Code**:
 - Commands: `/user:cleanup`, `/user:linear-issue`, `/user:memory_improve`
 - Subagents: Select by name in the subagents UI
+- Skills: All skills from `skills/` and `skills-code/` are automatically available
 
-Usage in Claude Desktop:
-- Package and upload skills from `skills-desktop/` using the packaging script
+**Usage in Claude Desktop**:
+- Skills must be packaged and uploaded manually:
+  ```bash
+  ./sync-scripts/package-skill.sh <skill-name>
+  # Then upload via Settings > Capabilities > Upload skill
+  ```
 
 ## Project-level components
 
