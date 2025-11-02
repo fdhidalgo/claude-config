@@ -1,0 +1,28 @@
+# macOS
+.DS_Store
+**/.DS_Store
+__MACOSX/
+
+# Environments and secrets
+.env
+.env.*
+*.key
+*.pem
+*.p12
+*.pfx
+*.crt
+*.csr
+secrets/
+tokens/
+
+# Archives
+*.zip
+
+# Logs
+npm-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# Editors
+.vscode/
+.idea/
