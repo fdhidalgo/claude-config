@@ -16,6 +16,7 @@ claude-config/
 ├── README.md
 ├── .gitignore
 ├── install.sh                  # Symlinks ~/.claude/{commands,agents,skills} to this repo
+├── claude_desktop_config.json  # Claude Desktop config (macOS only)
 ├── commands/                   # User-level slash commands (.md)
 ├── agents/                     # User-level subagents (.md with YAML frontmatter)
 ├── skills/                     # Skill folders (each containing SKILL.md)
@@ -117,14 +118,33 @@ git commit -m "Add Claude Code configuration"
 
 Team members can use `/project:<command-name>`.
 
+## Claude Desktop integration (macOS only)
+
+The install script also symlinks `claude_desktop_config.json` on macOS. This syncs your MCP server configurations and Desktop preferences.
+
+**Important**: Before committing changes to `claude_desktop_config.json`, review it for secrets:
+- API keys in `env` sections
+- Tokens or passwords
+- Any sensitive configuration
+
+Either:
+1. Remove secrets from the file and manage them separately (recommended)
+2. Use environment variables instead of hardcoded values
+3. Add the file to `.gitignore` if it contains too many secrets
+
+On Linux systems, the Desktop config is ignored (Claude Desktop uses a different location).
+
 ## Troubleshooting
 
 - Verify symlinks:
   ```bash
   ls -l ~/.claude
+  # On macOS, also check:
+  ls -l ~/Library/Application\ Support/Claude/claude_desktop_config.json
   ```
   You should see `commands -> .../claude-config/commands`, etc.
 - Restart Claude Code after major changes
+- Restart Claude Desktop after changing `claude_desktop_config.json`
 - If symlinks break, just re-run `./install.sh`
 
 ## Security

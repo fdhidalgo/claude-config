@@ -6,6 +6,8 @@ CLAUDE_DIR="$HOME/.claude"
 COMMANDS_LINK="$CLAUDE_DIR/commands"
 AGENTS_LINK="$CLAUDE_DIR/agents"
 SKILLS_LINK="$CLAUDE_DIR/skills"
+DESKTOP_CONFIG_DIR="$HOME/Library/Application Support/Claude"
+DESKTOP_CONFIG_LINK="$DESKTOP_CONFIG_DIR/claude_desktop_config.json"
 
 BACKUP_ROOT="$CLAUDE_DIR/install_backups"
 TIMESTAMP="$(date +%Y%m%d_%H%M%S)"
@@ -31,6 +33,19 @@ link_dir() {
   log "Linked $dest -> $src"
 }
 
+link_file() {
+  local src="$1"
+  local dest="$2"
+  if [ ! -f "$src" ]; then
+    log "Warning: Source file not found: $src"
+    return 1
+  fi
+  mkdir -p "$(dirname "$dest")"
+  backup_and_remove_path "$dest"
+  ln -s "$src" "$dest"
+  log "Linked $dest -> $src"
+}
+
 echo "Setting up Claude configuration from: $REPO_DIR"
 mkdir -p "$CLAUDE_DIR"
 mkdir -p "$REPO_DIR/commands" "$REPO_DIR/agents" "$REPO_DIR/skills"
@@ -42,11 +57,25 @@ link_dir "$REPO_DIR/agents" "$AGENTS_LINK"
 # Ensure skills dir exists, then symlink the entire dir for immediate reflection
 link_dir "$REPO_DIR/skills" "$SKILLS_LINK"
 
+# Link Claude Desktop config on macOS only
+if [[ "$OSTYPE" == "darwin"* ]]; then
+  if link_file "$REPO_DIR/claude_desktop_config.json" "$DESKTOP_CONFIG_LINK"; then
+    DESKTOP_LINKED=true
+  else
+    DESKTOP_LINKED=false
+  fi
+else
+  DESKTOP_LINKED=false
+fi
+
 echo
 echo "✅ Installation complete!"
 echo "- Commands: $COMMANDS_LINK -> $REPO_DIR/commands"
 echo "- Agents:   $AGENTS_LINK   -> $REPO_DIR/agents"
 echo "- Skills:   $SKILLS_LINK   -> $REPO_DIR/skills"
+if [ "$DESKTOP_LINKED" = true ]; then
+  echo "- Desktop:  $DESKTOP_CONFIG_LINK -> $REPO_DIR/claude_desktop_config.json"
+fi
 if [ -d "$BACKUP_DIR" ]; then
   echo "Backups (previous content, if any): $BACKUP_DIR"
 fi

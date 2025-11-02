@@ -15,6 +15,9 @@ __MACOSX/
 secrets/
 tokens/
 
+# WARNING: Review claude_desktop_config.json for secrets before committing!
+# Remove any API keys, tokens, or sensitive env vars from the file
+
 # Archives
 *.zip
 
