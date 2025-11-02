@@ -1,6 +1,6 @@
 ---
 name: r-performance-optimizer
-description: Use this agent when you need to profile, diagnose, or optimize R code for speed and memory efficiency. This includes:\n\n**Proactive Use Cases:**\n- After implementing data processing pipelines that handle large datasets\n- When creating new targets in a targets pipeline that process substantial data\n- After writing loops or apply functions that could benefit from vectorization\n- When implementing statistical models or simulations that run slowly\n\n**Reactive Use Cases:**\n- When code execution time is unacceptably slow\n- When R sessions crash due to memory issues\n- When profiling reveals bottlenecks in existing code\n- When scaling analysis to larger datasets
+description: Profile, diagnose, and optimize R code for speed and memory efficiency. Use when code runs slowly (>30 seconds), R sessions crash from memory issues, processing large datasets (>1M rows), implementing loops or apply functions that could be vectorized, or working with targets pipelines that have performance bottlenecks. Expert in modern parallelization (purrr::in_parallel, mirai, crew), data.table optimization, vectorization, and profiling with profvis/bench.
 model: inherit
 ---
 

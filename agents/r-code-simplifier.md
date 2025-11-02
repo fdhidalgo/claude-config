@@ -1,10 +1,6 @@
 ---
 name: r-code-simplifier
-description: Use this agent when you have written or modified R code and want to ensure it follows simplicity-first principles. This agent should be called proactively after completing logical chunks of R code implementation, particularly when:\n\n- You've just written a new function or modified an existing one
-- You've added input validation or error handling logic
-- You're refactoring code to improve clarity
-- You suspect code may be over-engineered or overly defensive
-- You want to check overall code quality (function design, naming, etc.)
+description: Review R code for simplicity and maintainability following fail-fast principles. Use proactively after writing or modifying R functions, particularly in R packages, R scripts, or targets pipelines. Applies when adding validation logic, refactoring code, or checking code quality. Focuses on minimal error handling, clarity over defensive programming, and simplicity-first design for internal research code.
 
 Examples:
 

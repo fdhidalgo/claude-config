@@ -13,25 +13,76 @@ Personal Claude Code configuration sync (commands, agents, and skills) using a G
 
 ```
 claude-config/
-├── README.md
+├── README.md                   # This file
+├── CLAUDE.md                   # Guide for Claude Code instances
 ├── .gitignore
 ├── install.sh                  # Symlinks and merges skills for Code
 ├── claude_desktop_config.json  # Claude Desktop config (macOS only)
-├── commands/                   # User-level slash commands (.md)
-├── agents/                     # User-level subagents (.md with YAML frontmatter)
-├── skills/                     # Shared skills (both Code + Desktop)
-├── skills-code/                # Code-only skills (merged into Code, not Desktop)
-├── skills-desktop/             # Desktop-only skills (not in Code)
-├── project-templates/          # Templates for project-level configs
+├── commands/                   # Universal slash commands (.md)
+├── agents/                     # Universal subagents (.md with YAML frontmatter)
+├── skills/                     # Universal skills (both Code + Desktop)
+├── skills-code/                # Code-only universal skills
+├── skills-desktop/             # Desktop-only universal skills
+├── library/                    # Templates for project-specific configs
+│   ├── README.md              # Template creation guide
+│   ├── skills/                # Skill templates with placeholders
+│   ├── commands/              # Command templates
+│   └── agents/                # Agent templates
+├── project-templates/          # (Legacy) Old project templates
 │   ├── commands/
 │   └── agents/
 └── sync-scripts/               # Helper scripts
     ├── push-changes.sh
     ├── pull-changes.sh
-    └── package-skill.sh
+    ├── package-skill.sh
+    └── init-project.sh         # Copy library templates to projects
 ```
 
 Because we symlink entire directories, new files added here appear immediately in `~/.claude/...` without re-running `install.sh`.
+
+## Configuration Strategy
+
+This repo uses a **three-tier architecture** to balance reuse and context efficiency:
+
+### 1. Universal (`skills/`, `commands/`, `agents/`)
+**When to use**: Domain expertise and general utilities used across all projects
+
+- Skills use progressive disclosure (~100 words metadata always in context)
+- Most skills should be universal with specific descriptions
+- Examples: R package advisor, cleanup command, performance optimizer
+
+**Decision rule**:
+- Skills: Used across ALL projects? → Universal
+- Commands: Universally useful? → Universal (appears as `/user:name`)
+- Agents: Domain expertise applies everywhere? → Universal
+
+### 2. Library (`library/`)
+**When to use**: Reusable patterns that need project-specific customization
+
+- Templates with placeholders (`{{API_URL}}`, `{{PROJECT_NAME}}`)
+- Copy to projects with `init-project.sh` and customize
+- Examples: API client template, deployment commands, code reviewer template
+
+**Decision rule**:
+- Applies to multiple projects BUT needs customization? → Library template
+
+### 3. Project-specific (`.claude/` in each project)
+**When to use**: Truly unique to one project
+
+- Company/client-specific APIs and schemas
+- Project architecture documentation
+- Project-specific workflows
+
+**Decision rule**:
+- Only used in one project? → Project-specific (appears as `/project:name`)
+
+### Quick Decision Guide
+
+```
+Universal: R package advisor, Python linter, /user:cleanup
+Library:   API client (different URLs), deploy (different envs)
+Project:   Acme Corp CRM API, Project X architecture specialist
+```
 
 ## Prerequisites
 
@@ -59,6 +110,8 @@ cd claude-config
 
 ## Usage workflow
 
+### Universal Configs
+
 - Edit or add files in `commands/`, `agents/`, or `skills/`
 - Changes reflect instantly in Claude due to directory symlinks
 - Sync changes:
@@ -68,6 +121,17 @@ cd claude-config
 # On another machine:
 ./sync-scripts/pull-changes.sh
 ```
+
+### Project-Specific Configs
+
+Initialize a project with library templates:
+
+```bash
+cd /path/to/your/project
+~/Documents/personal_scripts/claude-config/sync-scripts/init-project.sh
+```
+
+This copies templates from `library/` to your project's `.claude/` directory where you can customize them.
 
 ## File format requirements
 

@@ -36,7 +36,7 @@
         "obsidian-mcp-server"
       ],
       "env": {
-        "OBSIDIAN_API_KEY": "${OBSIDIAN_API_KEY}",
+        "OBSIDIAN_API_KEY": "4a26c82d8f7dbfa6f0fe8d3b35dd600896640a384f38e6b42166c7d364ded60d",
         "OBSIDIAN_BASE_URL": "http://127.0.0.1:27123",
         "OBSIDIAN_VERIFY_SSL": "false",
         "OBSIDIAN_ENABLE_CACHE": "true"
