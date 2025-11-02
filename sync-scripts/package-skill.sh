@@ -9,11 +9,18 @@ fi
 SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 REPO_DIR="$( cd "$SCRIPT_DIR/.." && pwd )"
 SKILL_NAME="$1"
-SKILL_DIR="$REPO_DIR/skills/$SKILL_NAME"
 OUT_DIR="${2:-$HOME/Desktop}"
 
-if [ ! -d "$SKILL_DIR" ]; then
-  echo "Error: Skill directory not found: $SKILL_DIR"
+# Check skills/ first (shared), then skills-desktop/ (Desktop-only)
+if [ -d "$REPO_DIR/skills/$SKILL_NAME" ]; then
+  SKILL_DIR="$REPO_DIR/skills/$SKILL_NAME"
+elif [ -d "$REPO_DIR/skills-desktop/$SKILL_NAME" ]; then
+  SKILL_DIR="$REPO_DIR/skills-desktop/$SKILL_NAME"
+else
+  echo "Error: Skill directory not found: $SKILL_NAME"
+  echo "Checked:"
+  echo "  - $REPO_DIR/skills/$SKILL_NAME"
+  echo "  - $REPO_DIR/skills-desktop/$SKILL_NAME"
   exit 1
 fi
 

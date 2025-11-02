@@ -19,7 +19,8 @@ claude-config/
 ├── claude_desktop_config.json  # Claude Desktop config (macOS only)
 ├── commands/                   # User-level slash commands (.md)
 ├── agents/                     # User-level subagents (.md with YAML frontmatter)
-├── skills/                     # Skill folders (each containing SKILL.md)
+├── skills/                     # Shared skills (Code + Desktop)
+├── skills-desktop/             # Desktop-only skills (not symlinked to Code)
 ├── project-templates/          # Templates for project-level configs
 │   ├── commands/
 │   └── agents/
@@ -79,30 +80,41 @@ cd claude-config
     - name: string
     - description: string
     - optional: allowed-tools, examples, etc.
-- Skills (Claude Code + Desktop):
-  - Location: `skills/<skill-name>/`
-  - Must contain `SKILL.md` with YAML frontmatter (`name`, `description`), plus optional `scripts/`, `references/`, `assets/`
-  - For Claude Desktop, package a skill as ZIP with:
+- Skills:
+  - **Shared skills** (`skills/`): Available in both Code and Desktop
+    - Claude Code uses via symlink (automatic)
+    - Claude Desktop requires packaging and upload
+  - **Desktop-only skills** (`skills-desktop/`): Only for Claude Desktop
+    - Not symlinked to Code (useful for skills requiring Desktop-specific MCP tools)
+    - Must be packaged and uploaded manually
+  - Both types must contain `SKILL.md` with YAML frontmatter (`name`, `description`), plus optional `scripts/`, `references/`, `assets/`
+  - **Package for Desktop**:
     ```bash
     ./sync-scripts/package-skill.sh <skill-name>
+    # Automatically searches both skills/ and skills-desktop/
     # Upload the created ZIP via Claude Desktop > Settings > Capabilities
     ```
 
 ## Included examples (migrated)
 
-- Commands:
+- **Commands**:
   - `cleanup.md`, `linear-issue.md`, `memory_improve.md`
-- Agents:
+- **Agents**:
   - `marimo-notebook-specialist.md`
   - `r-code-simplifier.md`
   - `r-package-advisor.md`
   - `r-performance-optimizer.md`
   - `r-test-writer.md`
   - `targets-pipeline-reviewer.md`
+- **Desktop-only skills**:
+  - `academic-reviewer`, `code-agent-builder`, `mochi-flashcards`, `student-feedback`, `weekly-reflection`
 
 Usage in Claude Code:
 - Commands: `/user:cleanup`, `/user:linear-issue`, `/user:memory_improve`
 - Subagents: Select by name in the subagents UI
+
+Usage in Claude Desktop:
+- Package and upload skills from `skills-desktop/` using the packaging script
 
 ## Project-level components
 
